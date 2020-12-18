@@ -26,6 +26,7 @@
 <script>
 import rp from 'request-promise'
 import $ from 'cheerio'
+import * as fb from '../firebase'
 
 export default {
     data() {
@@ -39,6 +40,7 @@ export default {
             let that = this;
             rp("https://cors-anywhere.herokuapp.com/" + this.formValues.url)
                 .then(function(html) {
+                    console.log($('#mw-content-text > div.mw-parser-output > table:nth-child(12) > tbody > tr > td:nth-child(3) > span > span > span > a', html).length)
                     //success!
                     const players = [];
                     for (let i = 0; i < 58; i++) {
@@ -50,6 +52,17 @@ export default {
                         })
                     }
                     that.data = players
+                    return players
+                })
+                .then(players => {
+                    // console.log(players)
+                    players.map(async player => {
+                        // console.log(player.name)
+                        await fb.playersCollection.add({
+                            name: player.name,
+                            url: player.url
+                        })
+                    })
                 })
                 .catch(function(err) {
                     //handle error
