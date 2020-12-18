@@ -22,6 +22,7 @@
     "cheerio": "^1.0.0-rc.3",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "lodash": "^4.17.20",
     "node-sass": "^5.0.0",
     "request-promise": "^4.2.6",
     "sass-loader": "^10.1.0",

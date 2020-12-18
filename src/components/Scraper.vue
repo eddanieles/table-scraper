@@ -27,6 +27,7 @@
 import rp from 'request-promise'
 import $ from 'cheerio'
 import * as fb from '../firebase'
+import _ from 'lodash'
 
 export default {
     data() {
@@ -40,10 +41,10 @@ export default {
             let that = this;
             rp("https://cors-anywhere.herokuapp.com/" + this.formValues.url)
                 .then(function(html) {
-                    console.log($('#mw-content-text > div.mw-parser-output > table:nth-child(12) > tbody > tr > td:nth-child(3) > span > span > span > a', html).length)
+                    let dataLength = $('#mw-content-text > div.mw-parser-output > table:nth-child(12) > tbody > tr > td:nth-child(3) > span > span > span > a', html).length
                     //success!
                     const players = [];
-                    for (let i = 0; i < 58; i++) {
+                    for (let i = 0; i < dataLength; i++) {
                         let name = $('#mw-content-text > div.mw-parser-output > table:nth-child(12) > tbody > tr > td:nth-child(3) > span > span > span > a', html)[i].attribs.title;
                         let url = $('#mw-content-text > div.mw-parser-output > table:nth-child(12) > tbody > tr > td:nth-child(3) > span > span > span > a', html)[i].attribs.href;
                         players.push({
@@ -55,14 +56,21 @@ export default {
                     return players
                 })
                 .then(players => {
-                    // console.log(players)
-                    players.map(async player => {
-                        // console.log(player.name)
-                        await fb.playersCollection.add({
-                            name: player.name,
-                            url: player.url
-                        })
-                    })
+                    players.map(player => {
+
+                        fb.playersCollection.get()
+                            .then(querySnapshot => {
+                                querySnapshot.forEach(async doc => {
+                                    if (!_.find(players, doc.data()) && player != doc.data()) {
+                                        console.log(`player: ${JSON.stringify(player)} firebase doc: ${JSON.stringify(doc.data())}`)
+                                        await fb.playersCollection.add({
+                                            name: player.name,
+                                            url: player.url
+                                        })
+                                    }
+                                })
+                            })
+                    })                    
                 })
                 .catch(function(err) {
                     //handle error
