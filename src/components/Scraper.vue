@@ -36,7 +36,8 @@ export default {
     },
     methods: {
         onSubmit() {
-            rp(this.formValues.url)
+            let that = this;
+            rp("https://cors-anywhere.herokuapp.com/" + this.formValues.url)
                 .then(function(html) {
                     //success!
                     const players = [];
@@ -48,7 +49,7 @@ export default {
                             url
                         })
                     }
-                    this.data = players
+                    that.data = players
                 })
                 .catch(function(err) {
                     //handle error
