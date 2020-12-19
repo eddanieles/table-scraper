@@ -63,9 +63,14 @@ export default {
                     that.formValues.tblData.map(column => {
                         let dataLength = $(column.path, html).length;
                         for (let i = 0; i < dataLength; i++) {
-                            // let url = $('#mw-content-text > div.mw-parser-output > table:nth-child(12) > tbody > tr > td:nth-child(3) > span > span > span > a', html)[i].attribs.href;
-                            players[i] = {}
-                            players[i][column.name] = $(column.path, html)[i].attribs[column.attrib]
+                            //sample data: let url = $('#mw-content-text > div.mw-parser-output > table:nth-child(12) > tbody > tr > td:nth-child(3) > span > span > span > a', html)[i].attribs.href;
+                            if (!players[i]) {
+                                players[i] = {}
+                                players[i][column.name] = $(column.path, html)[i].attribs[column.attrib]
+                            } else {
+                                players[i][column.name] = $(column.path, html)[i].attribs[column.attrib]
+                            }
+                            
                         }
                     })
                     
